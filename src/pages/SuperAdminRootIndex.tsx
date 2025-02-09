@@ -11,7 +11,7 @@ const data = [
   { name: "Jun", value: 3800 },
 ];
 
-const Index = () => {
+const SuperAdminRoot = () => {
   return (
     <div className="space-y-8">
       <header className="flex justify-between items-center">
@@ -109,4 +109,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default SuperAdminRoot;

@@ -1,57 +1,74 @@
+"use client"
 
-import { Home, PieChart, Settings, User, Users, Bell } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Link, useLocation } from "react-router-dom";
+import type React from "react"
+import { useState, useEffect } from "react"
+import { Home, PieChart, User, Users } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 const menuItems = [
-  { icon: Home, label: "Dashboard", path: "/" },
-  { icon: PieChart, label: "Analytics", path: "/analytics" },
-  { icon: Users, label: "Customer List", path: "/customer-list" },
-  // { icon: Bell, label: "Notifications", path: "/notifications" },
-  { icon: Users, label: "User Section", path: "/user-section" },
-  { icon: User, label: "Profile", path: "/profile" },
-  // { icon: Settings, label: "Settings", path: "/settings" },
-];
+  { icon: Home, label: "Dashboard", id: "SuperAdminRoot" },
+  { icon: PieChart, label: "Analytics", id: "analytics" },
+  { icon: Users, label: "Customer List", id: "customer-list" },
+  { icon: Users, label: "User Section", id: "user-section" },
+  { icon: User, label: "Profile", id: "profile" },
+]
 
-const Sidebar = () => {
-  const location = useLocation();
-  const userRole = localStorage.getItem("userRole");
+interface SidebarProps {
+  onTabChange?: (tabId: string) => void
+  initialActiveTab?: string
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ onTabChange, initialActiveTab = "SuperAdminRoot" }) => {
+  const [activeTab, setActiveTab] = useState(initialActiveTab)
+  const [userRole, setUserRole] = useState<string | null>(null)
+
+  useEffect(() => {
+    // Safely access localStorage on the client side
+    setUserRole(localStorage.getItem("userRole"))
+  }, [])
 
   const filteredMenuItems = menuItems.filter((item) => {
     if (userRole === "User") {
-      return !["User Section"].includes(item.label);
+      return !["User Section"].includes(item.label)
     }
-    return true;
-  });
+    return true
+  })
+
+  const handleTabClick = (tabId: string) => {
+    setActiveTab(tabId)
+    if (onTabChange) {
+      onTabChange(tabId)
+    }
+  }
 
   return (
     <div className="fixed left-0 top-0 h-full w-64 glass-card border-r border-white/10">
       <div className="flex flex-col h-full">
         <div className="p-6">
-          <h2 className="text-2xl font-bold text-primary">Finance</h2>
+          <h2 className="text-2xl font-bold text-primary">MBG Card</h2>
         </div>
-        
+
         <nav className="flex-1 px-4">
           <ul className="space-y-2">
             {filteredMenuItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
-              
+              const Icon = item.icon
+              const isActive = activeTab === item.id
+
               return (
-                <li key={item.path}>
-                  <Link
-                    to={item.path}
+                <li key={item.id}>
+                  <button
                     className={cn(
-                      "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
+                      "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 w-full text-left",
                       "hover:bg-white/10",
-                      isActive ? "bg-white/10" : "text-secondary"
+                      isActive ? "bg-white/10" : "text-secondary",
                     )}
+                    onClick={() => handleTabClick(item.id)}
                   >
                     <Icon className="h-5 w-5" />
                     <span>{item.label}</span>
-                  </Link>
+                  </button>
                 </li>
-              );
+              )
             })}
           </ul>
         </nav>
@@ -67,7 +84,8 @@ const Sidebar = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Sidebar;
+export default Sidebar
+
