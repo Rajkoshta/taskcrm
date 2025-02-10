@@ -50,6 +50,9 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+
+
+
 const initialState: AuthState = {
   user: null,
   token: localStorage.getItem("token") || null,
@@ -63,7 +66,7 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    logout: (state) => {
+    logoutUser: (state) => {
       state.user = null;
       state.token = null;
       state.role = null;
@@ -98,5 +101,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, clearError } = authSlice.actions;
+export const { logoutUser, clearError } = authSlice.actions;
 export default authSlice.reducer;

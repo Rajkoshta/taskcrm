@@ -35,11 +35,12 @@ const Sidebar: React.FC<SidebarProps> = ({ onTabChange, initialActiveTab = "Supe
   })
 
   const handleTabClick = (tabId: string) => {
-    setActiveTab(tabId)
+    setActiveTab(tabId);  // Updates local state
     if (onTabChange) {
-      onTabChange(tabId)
+      onTabChange(tabId);  // Updates parent state
     }
-  }
+  };
+  
 
   return (
     <div className="fixed left-0 top-0 h-full w-64 glass-card border-r border-white/10">

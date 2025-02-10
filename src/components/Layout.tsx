@@ -3,9 +3,12 @@
 import type React from "react"
 import { useState } from "react"
 import Sidebar from "./Sidebar"
+import MainContent from "./MainContent"
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activeTab, setActiveTab] = useState("SuperAdminRoot")
+  console.log("Current Active Tab:", activeTab);
+
 
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId)
@@ -15,8 +18,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar onTabChange={handleTabChange} initialActiveTab={activeTab} />
-      <main className="flex-1 ml-64 p-8">{children}</main>
+<Sidebar onTabChange={setActiveTab} initialActiveTab={activeTab} />
+<MainContent activeTab={activeTab} />
     </div>
   )
 }
