@@ -10,6 +10,7 @@ import {
   LogOut,
   UserPlus,
 } from "lucide-react";
+// import UserManagement from "@/pages/superadmin/components/userManagement/UserManagement";
 
 const Sidebar = () => {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -24,8 +25,8 @@ const Sidebar = () => {
       case "SUPERADMIN":
         return [
           { icon: LayoutDashboard, label: "Dashboard", path: "/admin" },
-          { icon: Users, label: "Customer List", path: "/customers" },
-          { icon: UserPlus, label: "User Management", path: "/users" },
+          { icon: Users, label: "Customer List", path: "/manage-customers" },
+          { icon: UserPlus, label: "Departments", path: "/manage-user" },
           { icon: Bell, label: "Notifications", path: "/notifications" },
           { icon: Settings, label: "Settings", path: "/settings" },
         ];

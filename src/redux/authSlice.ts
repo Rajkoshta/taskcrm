@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import api from "@/utils/api";
 
 interface User {
   id: number;
@@ -8,13 +8,6 @@ interface User {
   role: "SUPERADMIN" | "DEPARTMENT_USER" | "CUSTOMER";
   accessToken: string;
   refreshToken: string;
-  departmentType: string | null;
-  ownerName: string | null;
-  businessName: string | null;
-  phoneNumber: string | null;
-  additionalPhone: string | null;
-  address: string | null;
-  zipCode: string | null;
 }
 
 interface LoginCredentials {
@@ -27,17 +20,29 @@ interface AuthState {
   token: string | null;
   role: string | null;
   isAuthenticated: boolean;
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
 
-const API_URL = "http://localhost:8080/api/auth/login";
+// Load user data from localStorage (if available)
+const storedUser = localStorage.getItem("user");
+const storedToken = localStorage.getItem("token");
+const storedRole = localStorage.getItem("role");
+
+const initialState: AuthState = {
+  user: storedUser ? JSON.parse(storedUser) : null,
+  token: storedToken || null,
+  role: storedRole || null,
+  isAuthenticated: !!storedToken,
+  status: "idle",
+  error: null,
+};
 
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (credentials: LoginCredentials, { rejectWithValue }) => {
     try {
-      const response = await axios.post(API_URL, credentials);
+      const response = await api.post(`/auth/login`, credentials);
       if (response.data.success) {
         return response.data.data;
       }
@@ -50,18 +55,6 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-
-
-
-const initialState: AuthState = {
-  user: null,
-  token: localStorage.getItem("token") || null,
-  role: localStorage.getItem("role") || null,
-  isAuthenticated: !!localStorage.getItem("token"),
-  status: "idle",
-  error: null,
-};
-
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -72,6 +65,7 @@ const authSlice = createSlice({
       state.role = null;
       state.isAuthenticated = false;
       state.error = null;
+      localStorage.removeItem("user");
       localStorage.removeItem("token");
       localStorage.removeItem("role");
     },
@@ -91,6 +85,9 @@ const authSlice = createSlice({
         state.token = action.payload.accessToken;
         state.role = action.payload.role;
         state.isAuthenticated = true;
+        
+        // Store user data in localStorage
+        localStorage.setItem("user", JSON.stringify(action.payload));
         localStorage.setItem("token", action.payload.accessToken);
         localStorage.setItem("role", action.payload.role);
       })

@@ -1,9 +1,10 @@
 import React from 'react'
+import { CustomerTable } from '../superadmin/components/CustomerSection/components/CustomerTable'
 
 const index = () => {
   return (
     <div>
-      this is user department dashborad
+      <CustomerTable/>
     </div>
   )
 }
