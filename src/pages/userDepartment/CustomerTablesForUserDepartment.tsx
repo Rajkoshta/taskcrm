@@ -2,13 +2,13 @@
 import { useState, useEffect } from "react";
 import { Search, Download, ChevronDown, Trash, Eye } from 'lucide-react';
 import { Button } from '@/components/ui//button';
-import { AddCustomerDialog } from './AddCustomerDialog';
+// import { AddCustomerDialog } from './AddCustomerDialog';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui//input';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCustomersByAdmin,addCustomer  } from '@/redux/slices/customerSlice';
+import { fetchCustomersByAdmin, updateServiceStatus  } from '@/redux/slices/customerSlice';
 import { RootState } from "@/redux/store/store";
 
 
@@ -36,7 +36,11 @@ const statusStyles = {
   completed: 'bg-green-100 text-green-700'
 };
 
-export const CustomerTable = () => {
+const statusOptions = ["pending", "in_progress", "completed"];
+
+
+
+export const CustomerTablesForUserDepartment = () => {
   const [search, setSearch] = useState('');
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -46,30 +50,67 @@ export const CustomerTable = () => {
     (state: RootState) => state.customers
   );
 
-   // Fetch token and admin username from localStorage (or context if stored elsewhere)
-   const token = localStorage.getItem("token");
-   const adminUsername = localStorage.getItem("adminUsername") || "";
 
-   // Fetch customers on mount
+  console.log("this is customer details by department user", customers)
+  
+
    useEffect(() => {
     if (customers.length === 0 && status === 'idle') {
       dispatch(fetchCustomersByAdmin({ page: 0, size: 10,}));
     }
   }, [dispatch, customers.length, status]);
+
+  
   
 
 
   const handleDelete = (id: number) => {
-    // Implementation for delete functionality
     toast({
       title: "Success",
       description: "Customer deleted successfully"
     });
   };
 
-  // const handleViewCustomer = (customerId: number) => {
-  //   navigate(`/customer/${customerId}`);
-  // };
+
+//   const handleStatusChange = (customerId: number, serviceType: string, newStatus: string) => {
+//     const username = JSON.parse(localStorage.getItem("user") || "{}").email || "admin@mbg.com"; 
+//     dispatch(updateServiceStatus({ customerId, serviceType, newStatus, username }))
+//     .then(() => {
+//       toast({
+//         title: "Status Updated",
+//         description: "The service status has been updated successfully!",
+//       });
+//     })
+//     .catch((error: any) => {
+//       toast({
+//         title: "Error",
+//         description: error || "Failed to update status.",
+//         variant: 'destructive',
+//       });
+//     });
+//   };
+
+const handleStatusChange = (customerId: number, serviceType: string, newStatus: string) => {
+    const username = JSON.parse(localStorage.getItem("user") || "{}").email || "admin@mbg.com"; 
+  
+    dispatch(updateServiceStatus({ customerId, serviceType, newStatus, username }))
+      .then(() => {
+        toast({
+          title: "Status Updated",
+          description: "The service status has been updated successfully!",
+        });
+        dispatch(fetchCustomersByAdmin({ page: 0, size: 10 }));  
+      })
+      .catch((error: any) => {
+        toast({
+          title: "Error",
+          description: error || "Failed to update status.",
+          variant: 'destructive',
+        });
+      });
+  };
+  
+
 
   const handleViewCustomer = (customer: any) => {
     navigate(`/customer/${customer.id}`, { state: { customer } }); // ✅ Passing id and data
@@ -78,7 +119,7 @@ export const CustomerTable = () => {
   const filteredCustomers = (customers || []).filter(customer =>
     (customer.name && customer.name.toLowerCase().includes(search.toLowerCase())) ||
     (customer.email && customer.email.toLowerCase().includes(search.toLowerCase())) ||
-    (customer.businessName && customer.businessName.toLowerCase().includes(search.toLowerCase()))
+    (customer.businessName && customer.businessName.toLowerCase().includes(search.toLowerCase())) || " "
   );
   
   
@@ -89,13 +130,13 @@ export const CustomerTable = () => {
   }
 
 
-  const handleAddCustomer = (customerData: Customer) => {
-    dispatch(addCustomer(customerData));
-    toast({
-      title: "Success",
-      description: "Customer added successfully!",
-    });
-  };
+//   const handleAddCustomer = (customerData: Customer) => {
+//     dispatch(addCustomer(customerData));
+//     toast({
+//       title: "Success",
+//       description: "Customer added successfully!",
+//     });
+//   };
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-100">
@@ -120,7 +161,7 @@ export const CustomerTable = () => {
               <Download className="w-4 h-4" />
               Export
             </Button>
-            <AddCustomerDialog onAddCustomer={handleAddCustomer} />
+            {/* <AddCustomerDialog onAddCustomer={handleAddCustomer} /> */}
 
           </div>
         </div>
@@ -140,14 +181,19 @@ export const CustomerTable = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {filteredCustomers.map((customer) => (
-              <tr key={customer.id} className="hover:bg-gray-50">
+            {filteredCustomers.map((customer) => {
+                const validCreatedAt = customer.createdAt && !isNaN(new Date(customer.createdAt).getTime());
+                const validExpirationDate = customer.expirationDate && !isNaN(new Date(customer.expirationDate).getTime());
+                
+              return(
+                <tr key={customer.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4">
                   <div className="text-sm text-gray-900">
-                    {format(new Date(customer.createdAt), 'MMM dd, yyyy')}
+                    
+            {validCreatedAt ? format(new Date(customer.createdAt), 'MMM dd, yyyy') : "Invalid date"}
                   </div>
                   <div className="text-sm text-gray-500">
-                    {format(new Date(customer.createdAt), 'HH:mm:ss')}
+                  {validCreatedAt ? format(new Date(customer.createdAt), 'HH:mm:ss') : "Invalid time"}
                   </div>
                 </td>
                 <td className="px-6 py-4">
@@ -160,15 +206,24 @@ export const CustomerTable = () => {
                 </td>
                 <td className="px-6 py-4">
                   <div className="text-sm text-gray-900">
-                    {format(new Date(customer.expirationDate), 'MMM dd, yyyy')}
+                  {validExpirationDate ? format(new Date(customer.expirationDate), 'MMM dd, yyyy') : "Invalid date"}
                   </div>
                 </td>
 
                 <td className="px-6 py-4">
-                  <span className={`px-2 py-1 text-xs rounded-full ${statusStyles[customer.status as keyof typeof statusStyles] || 'bg-gray-100 text-gray-700'}`}>
-                    {customer.status?.replace('_', ' ').toUpperCase() || 'N/A'}
-                  </span>
+                <select
+                      value={customer.status} // Set the current customer status as the selected value
+                      onChange={(e) => handleStatusChange(customer.id, customer.services[0]?.serviceType || "", e.target.value)}
+                      className="px-2 py-1 text-xs rounded-full border-gray-300 focus:ring-primary"
+                    >
+                      {statusOptions.map((statusOption) => (
+                        <option key={statusOption} value={statusOption.toUpperCase()}>
+                          {statusOption.replace('_', ' ').toUpperCase()}
+                        </option>
+                      ))}
+                    </select>
                 </td>
+
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
                     <Button 
@@ -191,7 +246,8 @@ export const CustomerTable = () => {
                   </div>
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </div>

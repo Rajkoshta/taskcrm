@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { RootState } from "@/redux/store/store";
-import { logoutUser } from "@/redux/authSlice"; // Logout action
+import { logoutUser } from "@/redux/slices/authSlice"; // Logout action
 import {
   LayoutDashboard,
   Users,
@@ -32,15 +32,13 @@ const Sidebar = () => {
         ];
       case "DEPARTMENT_USER":
         return [
-          { icon: LayoutDashboard, label: "Dashboard", path: "/emp" },
-          { icon: Users, label: "Customers", path: "/customers" },
-          { icon: Bell, label: "Notifications", path: "/notifications" },
-          { icon: Settings, label: "Settings", path: "/settings" },
+          // { icon: LayoutDashboard, label: "Dashboard", path: "/" },
+          { icon: Users, label: "Customers", path: "/manage-customer-emp" },
         ];
       case "CUSTOMER":
         return [
           { icon: LayoutDashboard, label: "Dashboard", path: "/customers" },
-          { icon: Bell, label: "Notifications", path: "/notifications" },
+          { icon: Bell, label: "Notifications", path: "/customers" },
           { icon: Settings, label: "Settings", path: "/settings" },
         ];
       default:

@@ -10,7 +10,7 @@ import {
   LayoutDashboard 
 } from "lucide-react";
 import { useAppDispatch } from "@/redux/store/hooks";
-import { logout } from "@/redux/authSlice";
+import { logout } from "@/redux/slices/authSlice";
 import Sidebar from "@/components/Sidebar";
 const SuperAdminRoot = () => {
   const navigate = useNavigate();

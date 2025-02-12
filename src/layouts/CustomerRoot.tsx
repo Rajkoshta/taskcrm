@@ -9,7 +9,7 @@ import {
   LayoutDashboard 
 } from "lucide-react";
 import { useAppDispatch } from "@/redux/store/hooks";
-import { logout } from "@/redux/authSlice";
+import { logout } from "@/redux/slices/authSlice";
 const CustomerRoot = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();

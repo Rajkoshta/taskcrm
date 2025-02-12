@@ -4,7 +4,7 @@ import React, { Suspense } from "react"
 import { Loader2 } from "lucide-react"
 
 // Lazy load the components
-const SuperAdminRootIndex = React.lazy(() => import("../pages/superadmin/SuperAdminRoot"))
+const SuperAdminRootIndex = React.lazy(() => import("../pages/superadmin/components/DashboradSection/SuperAdminRoot"))
 // const Analytics = React.lazy(() => import("./Analytics"))
 // const CustomerList = React.lazy(() => import("./CustomerList"))
 // const UserSection = React.lazy(() => import("./UserSection"))
