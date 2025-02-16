@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => ({
       secure: false, // If backend is HTTP
     }
   }
-}
+},
   // server: {
   //   host: "::",
   //   port: 8081,
